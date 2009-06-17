@@ -1,0 +1,27 @@
+thrift/lib/cpp/src/transport/THttpClient.h says:
+
+ /**
+  * HTTP client implementation of the thrift transport. This was irritating
+  * to write, but the alternatives in C++ land are daunting. Linking CURL
+  * requires 23 dynamic libraries last time I checked (WTF?!?). All we have
+  * here is a VERY basic HTTP/1.1 client which supports HTTP 100 Continue,
+  * chunked transfer encoding, keepalive, etc. Tested against Apache.
+  */
+
+..but needed slightly more than very basic.
+The experiment this was used in has been rm -rf'd,
+but thought this piece might come in handy down the road and/or for others.
+
+Usage:
+
+    boost::shared_ptr<TTransport> transport = shared_ptr<TCurlClient>(new TCurlClient(_url));
+
+    boost::shared_ptr<TProtocol> protocol = shared_ptr<TProtocol>(new TBinaryProtocol(transport));
+    
+    boost::shared_ptr<TyourClient> client = shared_ptr<TyourClient>(new TyourClient(protocol));
+
+    (dynamic_pointer_cast<TCurlClient>(transport))->setCredentials(credentials);
+
+    (dynamic_pointer_cast<TCurlClient>(transport))->setOption(opt, val);
+
+    client->do_stuff(...);
